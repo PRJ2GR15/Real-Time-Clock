@@ -34,11 +34,11 @@ void rtc::setTime( unsigned char hours, unsigned char minuts, unsigned char seco
 	// to write set the direction bit to 0 
 	// module adress is hard coded to 1101000 + direction bit
 	i2c_obj.start();
-	i2c_obj.write(this->adress & 0xFE);
+	i2c_obj.write(this->adress & 0xFE); // masking adress to set the direction bit to 0
 	i2c_obj.write(0x00);
 	i2c_obj.write(this->intToBCD(seconds));
 	i2c_obj.write(this->intToBCD(minuts));
-	i2c_obj.write((this->intToBCD(hours) | 0x40));
+	i2c_obj.write((this->intToBCD(hours) | 0x40)); // masking to set the clock to 24 hours.
 	i2c_obj.stop();
 }
 
@@ -49,7 +49,7 @@ void rtc::setTime( unsigned char hours, unsigned char minuts, unsigned char seco
 void rtc::setDate( unsigned char date, unsigned char month, unsigned char year, unsigned char dayOfWeek )
 {
 	i2c_obj.start();
-	i2c_obj.write(this->adress & 0xFE);
+	i2c_obj.write(this->adress & 0xFE); // masking adress to set the direction bit to 0
 	i2c_obj.write(0x03);
 	i2c_obj.write(dayOfWeek);
 	i2c_obj.write(this->intToBCD(date));
@@ -66,16 +66,16 @@ int rtc::getHours()
 	// to read set the direction bit to 1
 	// module adress is hard coded to 1101000 + direction bit
 	i2c_obj.start();
-	i2c_obj.write(this->adress & 0xFE);
-	i2c_obj.write(0x02);
+	i2c_obj.write(this->adress & 0xFE); // set direction to write
+	i2c_obj.write(0x02); // setting the adress pointer of the RTC to the memory adress we want to read
 	i2c_obj.stop();
 	
 	i2c_obj.start();
-	i2c_obj.write(this->adress | 0x01);
-	unsigned char currentHours = i2c_obj.read(1);
+	i2c_obj.write(this->adress | 0x01); // set direction to read
+	unsigned char currentHours = i2c_obj.read(1); // read 1 byte of data
 	i2c_obj.stop();
 	
-	currentHours = currentHours & 0xBF;
+	currentHours = currentHours & 0xBF; // masking out the 24 hour bit.
 	return bcdToInt(currentHours);
 }
 //=============================================================
@@ -85,13 +85,13 @@ int rtc::getHours()
 int rtc::getMinuts()
 {
 	i2c_obj.start();
-	i2c_obj.write(this->adress & 0xFE);
-	i2c_obj.write(0x01);
+	i2c_obj.write(this->adress & 0xFE); // set direction to write
+	i2c_obj.write(0x01); // set the adress pointer on RTC to the memory adress we want to read
 	i2c_obj.stop();
 		
 	i2c_obj.start();
-	i2c_obj.write(this->adress | 0x01);
-	unsigned char currentMinuts = i2c_obj.read(1);
+	i2c_obj.write(this->adress | 0x01); // set to read
+	unsigned char currentMinuts = i2c_obj.read(1); // read 1 byte
 	i2c_obj.stop();
 		
 	return bcdToInt(currentMinuts);
@@ -192,9 +192,9 @@ int rtc::getYear()
 //=============================================================
 unsigned char rtc::intToBCD( unsigned char val )
 {
-	unsigned char tens = val/10 << 4;
-	unsigned char ones = val % 10;
-	return tens + ones;
+	unsigned char tens = val/10 << 4; // divide by 10 bitshift for places.
+	unsigned char ones = val % 10; // get the reminder of a devision by 10
+	return tens + ones; // add the numbers to gain the BCD value
 }
 //=============================================================
 // METHOD : bcdToInt
@@ -202,9 +202,9 @@ unsigned char rtc::intToBCD( unsigned char val )
 //=============================================================
 int rtc::bcdToInt( unsigned char BCDval )
 {
-	unsigned char ones = (BCDval & 0x0F);
-	unsigned char tens = ((BCDval & 0xF0) >> 4)*10;
-	return ones + tens;
+	unsigned char ones = (BCDval & 0x0F); // mask out the tens
+	unsigned char tens = ((BCDval & 0xF0) >> 4)*10; // mask out the ones and bitshift 4 places and multiplicate by 10
+	return ones + tens; // add the numbers to get the integer value.
 }
 
 
