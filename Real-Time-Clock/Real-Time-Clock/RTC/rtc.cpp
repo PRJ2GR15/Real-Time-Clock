@@ -31,15 +31,31 @@ rtc::rtc(unsigned char adress, int clock) : i2c_obj(1, clock)
 //=============================================================
 void rtc::setTime( unsigned char hours, unsigned char minuts, unsigned char seconds )
 {
-	
+	// to write set the direction bit to 0 
+	// module adress is hard coded to 1101000 + direction bit
+	i2c_obj.start();
+	i2c_obj.write(this->adress & 0xFE);
+	i2c_obj.write(0x00);
+	i2c_obj.write(this->intToBCD(seconds));
+	i2c_obj.write(this->intToBCD(minuts));
+	i2c_obj.write((this->intToBCD(hours) | 0x40));
+	i2c_obj.stop();
 }
+
 //=============================================================
 // METHOD : setTime
 // DESCR. : sets up the RTC to the date info passed through as parameters.
 //=============================================================
 void rtc::setDate( unsigned char date, unsigned char month, unsigned char year, unsigned char dayOfWeek )
 {
-	
+	i2c_obj.start();
+	i2c_obj.write(this->adress & 0xFE);
+	i2c_obj.write(0x03);
+	i2c_obj.write(dayOfWeek);
+	i2c_obj.write(this->intToBCD(date));
+	i2c_obj.write(this->intToBCD(month));
+	i2c_obj.write(this->intToBCD(year));
+	i2c_obj.stop();
 }
 //=============================================================
 // METHOD : getHours
@@ -47,7 +63,8 @@ void rtc::setDate( unsigned char date, unsigned char month, unsigned char year, 
 //=============================================================
 int rtc::getHours()
 {
-	
+	// to read set the direction bit to 1
+	// module adress is hard coded to 1101000 + direction bit
 }
 //=============================================================
 // METHOD : getMinuts
