@@ -113,7 +113,9 @@ unsigned char rtc::intToBCD( unsigned char val )
 //=============================================================
 int rtc::bcdToInt( unsigned char BCDval )
 {
-	
+	unsigned char ones = (val & 0x0F);
+	unsigned char tens = ((val & 0xF0) >> 4)*10;
+	return ones + tens;
 }
 
 
