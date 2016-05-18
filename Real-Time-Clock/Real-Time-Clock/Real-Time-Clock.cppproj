@@ -95,6 +95,12 @@
     <Compile Include="RTC\rtc.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="UART\uart.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="UART\uart.h">
+      <SubType>compile</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="i2c" />
