@@ -9,7 +9,7 @@
 // REV. DATE/AUTHOR CHANGE DESCRIPTION
 // 1.0 08-04-2016/Tonni Nybo Follmann created the initial working version
 //========================================================================
-#include "rtc/rtc.h"
+#include "rtc.h"
 //=====================================
 // CLASS : rtc
 // DESCR. : represents the real time clock module ds3231
@@ -65,6 +65,18 @@ int rtc::getHours()
 {
 	// to read set the direction bit to 1
 	// module adress is hard coded to 1101000 + direction bit
+	i2c_obj.start();
+	i2c_obj.write(this->adress & 0xFE);
+	i2c_obj.write(0x02);
+	i2c_obj.stop();
+	
+	i2c_obj.start();
+	i2c_obj.write(this->adress | 0x01);
+	unsigned char currentHours = i2c_obj.read(1);
+	i2c_obj.stop();
+	
+	currentHours = currentHours & 0xBF;
+	return bcdToInt(currentHours);
 }
 //=============================================================
 // METHOD : getMinuts
@@ -72,7 +84,17 @@ int rtc::getHours()
 //=============================================================
 int rtc::getMinuts()
 {
-	
+	i2c_obj.start();
+	i2c_obj.write(this->adress & 0xFE);
+	i2c_obj.write(0x01);
+	i2c_obj.stop();
+		
+	i2c_obj.start();
+	i2c_obj.write(this->adress | 0x01);
+	unsigned char currentMinuts = i2c_obj.read(1);
+	i2c_obj.stop();
+		
+	return bcdToInt(currentMinuts);
 }
 //=============================================================
 // METHOD : getSeconds
@@ -80,7 +102,17 @@ int rtc::getMinuts()
 //=============================================================
 int rtc::GetSeconds()
 {
-	
+	i2c_obj.start();
+	i2c_obj.write(this->adress & 0xFE);
+	i2c_obj.write(0x00);
+	i2c_obj.stop();
+		
+	i2c_obj.start();
+	i2c_obj.write(this->adress | 0x01);
+	unsigned char currentSeconds = i2c_obj.read(1);
+	i2c_obj.stop();
+		
+	return bcdToInt(currentSeconds);
 }
 //=============================================================
 // METHOD : getDayOfWeek
@@ -88,7 +120,17 @@ int rtc::GetSeconds()
 //=============================================================
 int rtc::getDayOfWeek()
 {
-	
+	i2c_obj.start();
+	i2c_obj.write(this->adress & 0xFE);
+	i2c_obj.write(0x03);
+	i2c_obj.stop();
+		
+	i2c_obj.start();
+	i2c_obj.write(this->adress | 0x01);
+	unsigned char currentDay = i2c_obj.read(1);
+	i2c_obj.stop();
+		
+	return currentDay;
 }
 //=============================================================
 // METHOD : getDate
@@ -96,7 +138,17 @@ int rtc::getDayOfWeek()
 //=============================================================
 int rtc::getDate()
 {
-	
+	i2c_obj.start();
+	i2c_obj.write(this->adress & 0xFE);
+	i2c_obj.write(0x04);
+	i2c_obj.stop();
+		
+	i2c_obj.start();
+	i2c_obj.write(this->adress | 0x01);
+	unsigned char currentDate = i2c_obj.read(1);
+	i2c_obj.stop();
+		
+	return bcdToInt(currentDate);
 }
 //=============================================================
 // METHOD : getMonth
@@ -104,7 +156,17 @@ int rtc::getDate()
 //=============================================================
 int rtc::getMonth()
 {
-	
+	i2c_obj.start();
+	i2c_obj.write(this->adress & 0xFE);
+	i2c_obj.write(0x05);
+	i2c_obj.stop();
+		
+	i2c_obj.start();
+	i2c_obj.write(this->adress | 0x01);
+	unsigned char currentMonth = i2c_obj.read(1);
+	i2c_obj.stop();
+		
+	return bcdToInt(currentMonth);
 }
 //=============================================================
 // METHOD : getYear
@@ -112,7 +174,17 @@ int rtc::getMonth()
 //=============================================================
 int rtc::getYear()
 {
-	
+	i2c_obj.start();
+	i2c_obj.write(this->adress & 0xFE);
+	i2c_obj.write(0x06);
+	i2c_obj.stop();
+		
+	i2c_obj.start();
+	i2c_obj.write(this->adress | 0x01);
+	unsigned char currentYear = i2c_obj.read(1);
+	i2c_obj.stop();
+		
+	return bcdToInt(currentYear);
 }
 //=============================================================
 // METHOD : intToBCD
@@ -130,8 +202,8 @@ unsigned char rtc::intToBCD( unsigned char val )
 //=============================================================
 int rtc::bcdToInt( unsigned char BCDval )
 {
-	unsigned char ones = (val & 0x0F);
-	unsigned char tens = ((val & 0xF0) >> 4)*10;
+	unsigned char ones = (BCDval & 0x0F);
+	unsigned char tens = ((BCDval & 0xF0) >> 4)*10;
 	return ones + tens;
 }
 

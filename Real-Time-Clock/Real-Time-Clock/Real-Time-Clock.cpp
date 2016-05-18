@@ -8,6 +8,7 @@
 
 #include <avr/io.h>
 #include "i2c/i2c.h"
+#include "RTC/rtc.h"
 
 int main(void)
 {

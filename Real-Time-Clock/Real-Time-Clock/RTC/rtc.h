@@ -10,7 +10,7 @@
 // 1.0 08-04-2016/Tonni Nybo Follmann created the initial working version
 //========================================================================
 #include <avr/io.h>
-#include "i2c/i2c.h"
+#include "../i2c/i2c.h"
 
 #ifndef RTC_H_
 #define RTC_H_
